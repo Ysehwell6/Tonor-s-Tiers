@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tonor's Tiers | AI PvP Auditing & Leaderboards</title>
-  <!-- CryptoJS for AES Encryption -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
     :root {
       --bg-main: #0a0a0a;
@@ -200,87 +198,23 @@
       line-height: 1.5;
     }
 
-    .form-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--text-white);
-    }
-
-    input[type="password"],
-    input[type="file"] {
-      width: 100%;
-      padding: 14px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.4);
-      color: var(--text-white);
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-
-    input[type="password"]:focus,
-    input[type="file"]:focus {
-      outline: none;
-      border-color: var(--primary-orange);
-      box-shadow: 0 0 15px var(--accent-glow);
-    }
-
-    small {
-      display: block;
-      margin-top: 6px;
-      color: var(--text-muted);
-      font-size: 0.8rem;
-    }
-
-    .btn-submit {
-      width: 100%;
+    .refresh-btn {
       background: var(--primary-orange);
       color: #000;
       border: none;
-      padding: 16px;
-      font-size: 1rem;
-      font-weight: 900;
-      border-radius: 12px;
+      padding: 8px 16px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.8rem;
       cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 0 15px var(--accent-glow);
+      transition: all 0.2s ease;
+      box-shadow: 0 0 10px var(--accent-glow);
     }
 
-    .btn-submit:hover {
+    .refresh-btn:hover {
       background: #ff8533;
-      transform: translateY(-2px);
-      box-shadow: 0 0 25px rgba(255, 106, 0, 0.6);
-    }
-
-    #status {
-      margin-top: 15px;
-      text-align: center;
-      font-weight: 700;
-      color: var(--primary-orange);
-      font-size: 0.95rem;
-    }
-
-    #result {
-      margin-top: 24px;
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid var(--glass-border);
-      border-left: 6px solid var(--primary-orange);
-      padding: 20px;
-      border-radius: 16px;
-      white-space: pre-wrap;
-      line-height: 1.6;
-      font-size: 0.95rem;
-      display: none;
-      text-align: left;
+      transform: translateY(-1px);
     }
 
     .leaderboard-container {
@@ -445,74 +379,6 @@
     .info-large-text a:hover {
       background: rgba(255, 106, 0, 0.15);
     }
-
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      z-index: 2000;
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-card {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 28px;
-      padding: 40px;
-      width: 90%;
-      max-width: 420px;
-      text-align: center;
-      box-shadow: 0 0 30px var(--accent-glow);
-    }
-
-    .modal-speed {
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: var(--primary-orange);
-      margin-bottom: 2px;
-      text-shadow: 0 0 10px var(--accent-glow);
-    }
-
-    .modal-subtitle {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-
-    .progress-bar-container {
-      width: 100%;
-      height: 20px;
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid var(--glass-border);
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 16px;
-      padding: 2px;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff4400, var(--primary-orange));
-      border-radius: 6px;
-      transition: width 0.15s ease-out;
-      box-shadow: 0 0 10px var(--accent-glow);
-    }
-
-    .modal-footer-stats {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
   </style>
 </head>
 <body>
@@ -522,9 +388,9 @@
     <div class="brand">Tonor's<span>-Tiers</span></div>
     
     <div class="nav-tabs">
-      <button class="nav-tab-btn" onclick="slideToView(0)">Tier-Testing</button>
-      <button class="nav-tab-btn active" onclick="slideToView(1)">Homepage & Info</button>
-      <button class="nav-tab-btn" onclick="slideToView(2)">Leaderboard</button>
+      <button class="nav-tab-btn active" onclick="slideToView(0)">Homepage & Info</button>
+      <button class="nav-tab-btn" onclick="slideToView(1)">Leaderboard</button>
+      <button class="nav-tab-btn" onclick="slideToView(2)">Download</button>
     </div>
 
     <div class="status-badge">
@@ -537,33 +403,7 @@
   <div class="viewport-container">
     <div class="slider-track" id="sliderTrack">
       
-      <!-- VIEW 0: Tier-Testing -->
-      <div class="view-panel">
-        <div class="card">
-          <div class="card-header">
-            <h2>Mechanical Audit Tool</h2>
-            <p>*Upload a match clip and let the AI analyze your mechanics with absolute precision.*</p>
-          </div>
-
-          <div class="form-group">
-            <label for="apiKey">Google Gemini API Key</label>
-            <input type="password" id="apiKey" placeholder="Enter Gemini API Key..." />
-            <small>*Secured locally with AES-256 encryption.*</small>
-          </div>
-
-          <div class="form-group">
-            <label for="videoFile">Upload Match Clip (MP4 / WebM)</label>
-            <input type="file" id="videoFile" accept="video/*" />
-          </div>
-
-          <button class="btn-submit" onclick="runTierTest()">Analyze Gameplay</button>
-
-          <div id="status"></div>
-          <div id="result"></div>
-        </div>
-      </div>
-
-      <!-- VIEW 1: Homepage & Merged Info -->
+      <!-- VIEW 0: Homepage & Merged Info -->
       <div class="view-panel">
         <div class="home-info-scroll-container" id="scrollContainer">
           
@@ -571,23 +411,21 @@
             <h2 class="info-section-title">What is Tonor's Tiers?</h2>
             <p style="text-align: center; color: var(--primary-orange); font-weight: 700; font-size: 1.1rem; margin-bottom: 24px;">*Unfiltered, objective AI mechanical audits for Minecraft PvP.*</p>
             <p class="info-large-text">
-              *Tonor's Tiers eliminates bias from community placement reviews. By leveraging Google's advanced multimodal AI models, match clips are inspected down to the frame—evaluating crosshair placement, spacing, combo rhythm, and resource management with zero sugarcoating.*
+              *Tonor's Tiers eliminates bias from community placement reviews. By leveraging advanced AI models, match clips are inspected down to the frame—evaluating crosshair placement, spacing, combo rhythm, and resource management with zero sugarcoating.*
             </p>
           </div>
 
           <div style="padding: 10px 0;">
             <h2 class="info-section-title scroll-anim">System Submission Guide</h2>
             <p style="text-align: center; color: var(--text-muted); font-size: 1.1rem; margin-bottom: 50px;" class="scroll-anim">*Step-by-step instructions on how to get tested and officially ranked.*</p>
-            
-            <p class="info-large-text scroll-anim">*You <strong>NEED</strong> a Google Gemini API key to operate the local auditing software.*</p>
-            
+                        
             <p class="info-large-text scroll-anim">*<strong>Step 1:</strong> Find a friend or someone you know to consent to duel you in an FT5 match in any of our supported game modes: <strong>Mace, Spear-Mace, UHC, Sword, Axe, Diamond Pot, Netherite Pot, Diamond SMP, SMP</strong>.*</p>
             
             <p class="info-large-text scroll-anim">*<strong>Step 2:</strong> Record you and your opponent fighting. When the match concludes, end the recording.*</p>
             
             <p class="info-large-text scroll-anim">*<strong>Step 3:</strong> Start a fresh screen-recording to capture you submitting that fight clip to the AI. Do not end that screen record until the AI finishes responding and you scroll down to show the entire response report.*</p>
             
-            <p class="info-large-text scroll-anim">*<strong>Step 4:</strong> Upload both your fight clip and screen-recording to <a href="https://www.mediafire.com/" target="_blank">MediaFire</a>, then join the Tonor's Tiers Discord server at <a href="https://discord.gg/eusN8BYAg5" target="_blank">discord.gg/eusN8BYAg5</a>.*</p>
+            <p class="info-large-text scroll-anim">*<strong>Step 4:</strong> Upload both your fight clip and screen-recording to <a href="https://www.mediafire.com/" target="_blank">MediaFire</a>, then join the Tonor's Tiers Discord server.*</p>
             
             <p class="info-large-text scroll-anim">*<strong>Step 5:</strong> Navigate to the <code>#request-an-analyst</code> channel and tag <code>@analyst</code>.*</p>
             
@@ -597,12 +435,13 @@
         </div>
       </div>
 
-      <!-- VIEW 2: Leaderboard -->
+      <!-- VIEW 1: Leaderboard -->
       <div class="view-panel">
         <div class="leaderboard-container">
           <div class="card-header" style="text-align: center; margin-bottom: 20px;">
             <h2 style="font-size: 2rem;">Community Rankings</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">*Hardcoded community tier list.*</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">*Live community tier list pulled from database.*</p>
+            <button class="refresh-btn" onclick="fetchAndRenderLeaderboard()">🔄 Refresh Leaderboard</button>
           </div>
 
           <div class="tabs-nav" style="position: static; transform: none; margin-bottom: 20px;">
@@ -694,21 +533,18 @@
         </div>
       </div>
 
-    </div>
-  </div>
+      <!-- VIEW 2: Download -->
+      <div class="view-panel">
+        <div class="card" style="text-align: center;">
+          <div class="card-header">
+            <h2>Download</h2>
+          </div>
+          <p class="info-large-text" style="margin-bottom: 0;">
+            Download the tester at <a href="https://discord.gg/eusN8BYAg5" target="_blank">https://discord.gg/eusN8BYAg5</a>
+          </p>
+        </div>
+      </div>
 
-  <!-- Upload Modal -->
-  <div id="uploadModal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-speed" id="modalSpeed">0.00 Mbps</div>
-      <div class="modal-subtitle" id="modalSubtitle">UPLOAD SPEED</div>
-      <div class="progress-bar-container">
-        <div class="progress-bar-fill" id="modalProgressFill"></div>
-      </div>
-      <div class="modal-footer-stats">
-        <span id="modalPercent">0% there</span>
-        <span>Time: <strong id="modalTimer" style="color:var(--text-white);">00:00</strong></span>
-      </div>
     </div>
   </div>
 
@@ -734,17 +570,6 @@
     evt.currentTarget.classList.add('active');
   }
 
-  const localLeaderboardData = {
-    players: [
-      { name: "7lamingo", mode: "Mace", tier: "HT3" },
-      { name: "7lamingo", mode: "Sword", tier: "HT4" },
-      { name: "7lamingo", mode: "UHC", tier: "LT3" },
-      { name: "gameberker", mode: "UHC", tier: "HT4" },
-      { name: "gameberker", mode: "Sword", tier: "LT4" },
-      { name: "KhalidGaming36", mode: "Sword", tier: "LT5" }
-    ]
-  };
-
   const tierPoints = {
     "HT1": 60, "LT1": 45,
     "HT2": 30, "LT2": 20,
@@ -763,8 +588,30 @@
     return "Rookie";
   }
 
-  function renderLeaderboard() {
-    const players = localLeaderboardData.players || [];
+  async function fetchAndRenderLeaderboard() {
+    try {
+      // Using GitHub API endpoint to pull the raw content without CDN caching delays
+      const apiUrl = `https://api.github.com/repos/Ysehwell6/Tonor-s-Tiers/contents/leaderboard.json?t=${new Date().getTime()}`;
+      const response = await fetch(apiUrl, {
+        headers: {
+          'Accept': 'application/vnd.github.v3.raw'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch leaderboard data from GitHub API');
+      }
+      
+      const data = await response.json();
+      renderLeaderboard(data);
+    } catch (error) {
+      console.error("Error loading leaderboard:", error);
+      document.getElementById("overall-tbody").innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">Could not load leaderboard data. Try refreshing.</td></tr>`;
+    }
+  }
+
+  function renderLeaderboard(leaderboardData) {
+    const players = leaderboardData.players || [];
     const playerMap = {};
     const modeLists = {
       "Mace": [],
@@ -887,148 +734,10 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    slideToView(1); 
-    renderLeaderboard();
+    slideToView(0); 
+    fetchAndRenderLeaderboard();
     initScrollAnimations();
   });
-
-  const PASSPHRASE = "tonors-tester-secure-salt";
-  window.onload = function() {
-    const encryptedKey = localStorage.getItem("enc_gemini_key_v2");
-    if (encryptedKey) {
-      try {
-        const bytes = CryptoJS.AES.decrypt(encryptedKey, PASSPHRASE);
-        const originalKey = bytes.toString(CryptoJS.enc.Utf8);
-        if (originalKey) document.getElementById("apiKey").value = originalKey;
-      } catch (e) {}
-    }
-  };
-
-  function uploadFileWithProgress(url, file, onProgress) {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", url, true);
-      xhr.setRequestHeader("X-Goog-Upload-Protocol", "raw");
-      xhr.setRequestHeader("Content-Type", file.type);
-      const startTime = Date.now();
-
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) {
-          const percent = Math.round((e.loaded / e.total) * 100);
-          const elapsedSec = (Date.now() - startTime) / 1000;
-          let speedMbps = elapsedSec > 0 ? ((e.loaded * 8) / elapsedSec / 1000000).toFixed(2) : "0.00";
-          onProgress(percent, speedMbps);
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try { resolve(JSON.parse(xhr.responseText)); } catch (err) { reject(new Error("Invalid JSON response")); }
-        } else {
-          reject(new Error(`Upload failed with status ${xhr.status}`));
-        }
-      };
-      xhr.onerror = () => reject(new Error("Network connection error during file upload."));
-      xhr.send(file);
-    });
-  }
-
-  async function waitForFileActive(fileUri, apiKey) {
-    const statusUrl = `${fileUri}?key=${apiKey}`;
-    let state = "PROCESSING";
-    
-    while (state === "PROCESSING") {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      const res = await fetch(statusUrl);
-      const data = await res.json();
-      state = data.state;
-      if (state === "FAILED") {
-        throw new Error("Video processing failed on Google's servers.");
-      }
-    }
-  }
-
-  async function runTierTest() {
-    const keyInput = document.getElementById("apiKey").value.trim();
-    const fileInput = document.getElementById("videoFile");
-    const statusDiv = document.getElementById("status");
-    const resultDiv = document.getElementById("result");
-    const modal = document.getElementById("uploadModal");
-    const modalSpeed = document.getElementById("modalSpeed");
-    const modalFill = document.getElementById("modalProgressFill");
-    const modalPercent = document.getElementById("modalPercent");
-    const modalTimer = document.getElementById("modalTimer");
-
-    if (!keyInput) { alert("Please enter your API Key."); return; }
-    if (fileInput.files.length === 0) { alert("Please select a video file."); return; }
-
-    localStorage.setItem("enc_gemini_key_v2", CryptoJS.AES.encrypt(keyInput, PASSPHRASE).toString());
-    const videoFile = fileInput.files[0];
-
-    modal.style.display = "flex";
-    let secondsElapsed = 0;
-    const timerInterval = setInterval(() => {
-      secondsElapsed++;
-      let mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
-      let secs = (secondsElapsed % 60).toString().padStart(2, '0');
-      modalTimer.innerText = `${mins}:${secs}`;
-    }, 1000);
-
-    statusDiv.innerText = "⏳ Uploading clip...";
-    resultDiv.style.display = "none";
-
-    try {
-      const uploadUrl = `https://generativelanguage.googleapis.com/upload/v1beta/files?key=${keyInput}`;
-      const uploadData = await uploadFileWithProgress(uploadUrl, videoFile, (percent, speedMbps) => {
-        modalSpeed.innerText = `${speedMbps} mbps`;
-        modalFill.style.width = `${percent}%`;
-        modalPercent.innerText = `${percent}% there`;
-      });
-
-      const fileUri = uploadData?.file?.uri;
-      if (!fileUri) throw new Error("File URI missing from upload response.");
-
-      modalSpeed.innerText = "⏳ PROCESSING";
-      statusDiv.innerText = "⏳ Waiting for AI to process video stream...";
-      
-      await waitForFileActive(fileUri, keyInput);
-
-      clearInterval(timerInterval);
-      modalSpeed.innerText = "⚡ ANALYZING";
-      statusDiv.innerText = "⏳ Running AI mechanical audit...";
-
-      // Updated to use the correct gemini-3.5-flash-lite endpoint
-      const generateUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${keyInput}`;
-      const genResponse = await fetch(generateUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: "You are Tonor's Testing AI, a cold, brutally truthful Minecraft PvP mechanical auditor." }] },
-          contents: [{ parts: [{ file_data: { file_uri: fileUri, mime_type: videoFile.type } }, { text: "Analyze this match clip." }] }]
-        })
-      });
-
-      const genData = await genResponse.json();
-      
-      if (genData.error) {
-        throw new Error(genData.error.message || "API returned an error.");
-      }
-
-      const report = genData?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!report) throw new Error("Empty response received from AI model.");
-
-      modal.style.display = "none";
-      statusDiv.innerText = "✅ Evaluation Complete.";
-      resultDiv.innerText = report;
-      resultDiv.style.display = "block";
-
-    } catch (err) {
-      clearInterval(timerInterval);
-      modal.style.display = "none";
-      statusDiv.innerText = "❌ Analysis Failed: " + err.message;
-      console.error(err);
-    }
-  }
 </script>
 
 </body>

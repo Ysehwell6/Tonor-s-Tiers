@@ -1,0 +1,34 @@
+{
+  "players": [
+    {
+      "name": "7lamingo",
+      "mode": "Mace",
+      "tier": "HT3"
+    },
+    {
+      "name": "7lamingo",
+      "mode": "UHC",
+      "tier": "LT3"
+    },
+    {
+      "name": "7lamingo",
+      "mode": "Sword",
+      "tier": "HT4"
+    },
+    {
+      "name": "gameberker",
+      "mode": "Sword",
+      "tier": "LT4"
+    },
+    {
+      "name": "gameberker",
+      "mode": "UHC",
+      "tier": "HT4"
+    },
+    {
+      "name": "KhalidGaming36",
+      "mode": "Sword",
+      "tier": "LT5"
+    }
+  ]
+}

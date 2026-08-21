@@ -580,26 +580,23 @@
       <div class="view-panel">
         <div class="home-info-scroll-container" id="scrollContainer">
           
-          <!-- What is Tonor's Tiers Section (ZERO INNERBOX) -->
+          <!-- What is Tonor's Tiers Section -->
           <div style="padding: 10px 0;" class="scroll-anim">
             <h2 class="info-section-title">What is Tonor's Tiers?</h2>
             <p style="text-align: center; color: var(--primary-orange); font-weight: 700; font-size: 1.1rem; margin-bottom: 24px;">*Unfiltered, objective AI mechanical audits for Minecraft PvP.*</p>
             <p class="info-large-text">
               *Tonor's Tiers eliminates bias from community placement reviews. By leveraging Google's advanced multimodal AI models, match clips are inspected down to the frame—evaluating crosshair placement, spacing, combo rhythm, and resource management with zero sugarcoating.*
             </p>
-            <p class="info-large-text">
-              *The system utilizes fine-tuned system instructions to map visual player input directly to high-tier combat benchmarks. Every audit breaks down defensive weaknesses and offensive openings with precise, raw metrics.*
-            </p>
           </div>
 
-          <!-- Info Section Below (ZERO INNERBOX) -->
+          <!-- Info Section Below -->
           <div style="padding: 10px 0;">
             <h2 class="info-section-title scroll-anim">System Submission Guide</h2>
             <p style="text-align: center; color: var(--text-muted); font-size: 1.1rem; margin-bottom: 50px;" class="scroll-anim">*Step-by-step instructions on how to get tested and officially ranked.*</p>
             
             <p class="info-large-text scroll-anim">*You <strong>NEED</strong> a Google Gemini API key to operate the local auditing software.*</p>
             
-            <p class="info-large-text scroll-anim">*<strong>Step 1:</strong> Find a friend or someone you know to consent to duel you in an FT5 match in any of our supported game modes: <strong>Mace, Spear-Mace, UHC, Sword, Axe, Dia Pot, Neth Pot, Dia SMP, Neth SMP</strong>.*</p>
+            <p class="info-large-text scroll-anim">*<strong>Step 1:</strong> Find a friend or someone you know to consent to duel you in an FT5 match in any of our supported game modes: <strong>Mace, Spear-Mace, UHC, Sword, Axe, Diamond Pot, Netherite Pot, Diamond SMP, SMP</strong>.*</p>
             
             <p class="info-large-text scroll-anim">*<strong>Step 2:</strong> Record you and your opponent fighting. When the match concludes, end the recording.*</p>
             
@@ -607,15 +604,7 @@
             
             <p class="info-large-text scroll-anim">*<strong>Step 4:</strong> Upload both your fight clip and screen-recording to <a href="https://www.mediafire.com/" target="_blank">MediaFire</a>, then join the Tonor's Tiers Discord server at <a href="https://discord.gg/eusN8BYAg5" target="_blank">discord.gg/eusN8BYAg5</a>.*</p>
             
-            <p class="info-large-text scroll-anim">*<strong>Step 5:</strong> Navigate to the <code>#request-an-analyst</code> channel and tag <code>@analyst</code>. Any other use of @ tagging is strictly prohibited and will result in a permanent ban.*</p>
-            
-            <p class="info-large-text scroll-anim">*<strong>Step 6:</strong> When an analyst is ready, they will open a private ticket tab where you will send both MediaFire clip links.*</p>
-            
-            <p class="info-large-text scroll-anim">*<strong>Step 7:</strong> The analyst will thoroughly inspect both video files to ensure zero editing and verify that the AI gave a fair, unaltered rating.*</p>
-            
-            <p class="info-large-text scroll-anim">*<strong>Outcomes of the Audit:</strong><br>
-            1. Your role is found invalid if the AI made an evaluation mistake; the analyst will then adjust your role up or down.<br>
-            2. If you are caught tampering with or modifying either video file, you <strong>WILL</strong> be permanently banned.*</p>
+            <p class="info-large-text scroll-anim">*<strong>Step 5:</strong> Navigate to the <code>#request-an-analyst</code> channel and tag <code>@analyst</code>.*</p>
             
             <p class="info-large-text scroll-anim" style="margin-bottom: 60px;">*Once you are officially verified and marked safe by the analyst, you will be added directly to the <strong>Leaderboard</strong> tab!*</p>
           </div>
@@ -761,7 +750,7 @@
     evt.currentTarget.classList.add('active');
   }
 
-  // Hardcoded Leaderboard Data
+  // Hardcoded Leaderboard Data with Your Players
   const localLeaderboardData = {
     players: [
       { name: "7lamingo", mode: "Mace", tier: "HT3" },
@@ -773,7 +762,6 @@
     ]
   };
 
-  // Points mapping & Title generator
   const tierPoints = {
     "HT1": 60, "LT1": 45,
     "HT2": 30, "LT2": 20,
@@ -896,7 +884,7 @@
     }
   }
 
-  // Scroll Animation Observer with safe margins
+  // Scroll Animation Observer
   function initScrollAnimations() {
     const scrollContainer = document.getElementById("scrollContainer");
     const animElements = document.querySelectorAll(".scroll-anim");
@@ -919,12 +907,11 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    slideToView(1); // Default to Homepage & Info view
+    slideToView(1); 
     renderLeaderboard();
     initScrollAnimations();
   });
 
-  // API Key & Upload logic
   const PASSPHRASE = "tonors-tester-secure-salt";
   window.onload = function() {
     const encryptedKey = localStorage.getItem("enc_gemini_key_v2");
@@ -956,14 +943,30 @@
 
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          try { resolve(JSON.parse(xhr.responseText)); } catch (err) { reject(new Error("Invalid JSON")); }
+          try { resolve(JSON.parse(xhr.responseText)); } catch (err) { reject(new Error("Invalid JSON response")); }
         } else {
           reject(new Error(`Upload failed with status ${xhr.status}`));
         }
       };
-      xhr.onerror = () => reject(new Error("Network connection error."));
+      xhr.onerror = () => reject(new Error("Network connection error during file upload."));
       xhr.send(file);
     });
+  }
+
+  // Poll Google's server until video file state is ACTIVE
+  async function waitForFileActive(fileUri, apiKey) {
+    const statusUrl = `${fileUri}?key=${apiKey}`;
+    let state = "PROCESSING";
+    
+    while (state === "PROCESSING") {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      const res = await fetch(statusUrl);
+      const data = await res.json();
+      state = data.state;
+      if (state === "FAILED") {
+        throw new Error("Video processing failed on Google's servers.");
+      }
+    }
   }
 
   async function runTierTest() {
@@ -1004,13 +1007,19 @@
       });
 
       const fileUri = uploadData?.file?.uri;
-      if (!fileUri) throw new Error("File URI missing.");
+      if (!fileUri) throw new Error("File URI missing from upload response.");
+
+      modalSpeed.innerText = "⏳ PROCESSING";
+      statusDiv.innerText = "⏳ Waiting for AI to process video stream...";
+      
+      // Wait for Google's servers to fully process the video file
+      await waitForFileActive(fileUri, keyInput);
 
       clearInterval(timerInterval);
       modalSpeed.innerText = "⚡ ANALYZING";
       statusDiv.innerText = "⏳ Running AI mechanical audit...";
 
-      const generateUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${keyInput}`;
+      const generateUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${keyInput}`;
       const genResponse = await fetch(generateUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1021,8 +1030,13 @@
       });
 
       const genData = await genResponse.json();
+      
+      if (genData.error) {
+        throw new Error(genData.error.message || "API returned an error.");
+      }
+
       const report = genData?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!report) throw new Error("Empty response from AI.");
+      if (!report) throw new Error("Empty response received from AI model.");
 
       modal.style.display = "none";
       statusDiv.innerText = "✅ Evaluation Complete.";
@@ -1032,8 +1046,8 @@
     } catch (err) {
       clearInterval(timerInterval);
       modal.style.display = "none";
-      statusDiv.innerText = "❌ Analysis Failed.";
-      alert(err.message);
+      statusDiv.innerText = "❌ Analysis Failed: " + err.message;
+      console.error(err);
     }
   }
 </script>

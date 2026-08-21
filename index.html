@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tonor's Tiers | AI PvP Auditing & Leaderboards</title>
+  <title>Tonor's Tiers | PvP Leaderboards & Info</title>
   <style>
     :root {
       --bg-main: #0a0a0a;
@@ -12,7 +12,7 @@
       --accent-glow: rgba(255, 106, 0, 0.35);
       --text-white: #ffffff;
       --text-muted: #a3a3a3;
-      --glass-bg: rgba(18, 18, 18, 0.65);
+      --glass-bg: rgba(18, 18, 18, 0.75);
       --glass-border: rgba(255, 106, 0, 0.2);
     }
 
@@ -27,7 +27,8 @@
     }
 
     ::-webkit-scrollbar {
-      width: 8px;
+      width: 6px;
+      height: 6px;
     }
 
     ::-webkit-scrollbar-track {
@@ -38,10 +39,6 @@
       background: var(--primary-orange);
       border-radius: 4px;
       box-shadow: 0 0 10px var(--accent-glow);
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #ff8533;
     }
 
     body {
@@ -59,7 +56,7 @@
       position: fixed;
       top: 0;
       z-index: 1000;
-      background: rgba(10, 10, 10, 0.25);
+      background: rgba(10, 10, 10, 0.45);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid rgba(255, 106, 0, 0.3);
@@ -164,7 +161,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 40px 20px;
+      padding: 30px 20px;
       overflow-y: auto;
     }
 
@@ -174,39 +171,38 @@
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
       border-radius: 24px;
-      padding: 40px;
+      padding: 30px;
       width: 100%;
-      max-width: 850px;
+      max-width: 900px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 106, 0, 0.05);
     }
 
     .card-header {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       text-align: center;
     }
 
     .card-header h2 {
-      font-size: 2.2rem;
+      font-size: 2rem;
       color: var(--text-white);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
     }
 
     .card-header p {
       color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.5;
+      font-size: 0.9rem;
     }
 
     .refresh-btn {
       background: var(--primary-orange);
       color: #000;
       border: none;
-      padding: 8px 16px;
-      margin-top: 10px;
+      padding: 6px 14px;
+      margin-top: 8px;
       border-radius: 8px;
       font-weight: 800;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 0 10px var(--accent-glow);
@@ -214,12 +210,67 @@
 
     .refresh-btn:hover {
       background: #ff8533;
-      transform: translateY(-1px);
     }
 
     .leaderboard-container {
       width: 100%;
-      max-width: 950px;
+      max-width: 1300px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .controls-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .search-filter-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 520px;
+      justify-content: center;
+    }
+
+    .search-box {
+      flex: 1;
+      padding: 10px 16px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--text-white);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .search-box:focus {
+      border-color: var(--primary-orange);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .local-filter-btn {
+      background: rgba(124, 58, 237, 0.2);
+      border: 1px solid #7c3aed;
+      color: #c4b5fd;
+      padding: 0 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .local-filter-btn.active {
+      background: #7c3aed;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
     }
 
     .tabs-nav {
@@ -227,18 +278,17 @@
       flex-wrap: wrap;
       gap: 6px;
       justify-content: center;
-      margin-bottom: 20px;
     }
 
     .sub-tab-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--glass-border);
       color: var(--text-muted);
-      padding: 8px 14px;
-      border-radius: 10px;
+      padding: 6px 12px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: 700;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       transition: all 0.2s ease;
     }
 
@@ -256,6 +306,8 @@
 
     .sub-tab-content {
       display: none;
+      flex: 1;
+      overflow-y: auto;
     }
 
     .sub-tab-content.active {
@@ -301,17 +353,6 @@
       color: var(--text-white);
     }
 
-    .tier-badge {
-      display: inline-block;
-      padding: 3px 8px;
-      background: rgba(255, 106, 0, 0.1);
-      color: var(--primary-orange);
-      border: 1px solid rgba(255, 106, 0, 0.3);
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 0.75rem;
-    }
-
     .title-badge {
       font-size: 0.7rem;
       color: #000;
@@ -321,6 +362,83 @@
       font-weight: 800;
       display: inline-block;
       box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .local-badge {
+      font-size: 0.65rem;
+      color: #fff;
+      background: #7c3aed;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      margin-left: 6px;
+      box-shadow: 0 0 8px rgba(124, 58, 237, 0.4);
+    }
+
+    .tier-columns-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      width: 100%;
+      padding-bottom: 20px;
+    }
+
+    @media (max-width: 1100px) {
+      .tier-columns-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+    }
+
+    .tier-column-card {
+      background: rgba(15, 15, 15, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .tier-column-header {
+      padding: 12px 16px;
+      font-weight: 900;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #000;
+      text-align: center;
+      box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2);
+    }
+
+    .tier-col-1 .tier-column-header { background: linear-gradient(135deg, #ffd700, #ff8c00); }
+    .tier-col-2 .tier-column-header { background: linear-gradient(135deg, #e0e0e0, #9e9e9e); }
+    .tier-col-3 .tier-column-header { background: linear-gradient(135deg, #cd7f32, #8b4513); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .tier-col-4 .tier-column-header { background: linear-gradient(135deg, #ff4d4d, #b30000); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .tier-col-5 .tier-column-header { background: linear-gradient(135deg, #8a8a8a, #3a3a3a); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+
+    .tier-column-body {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .tier-player-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 8px 10px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .tier-player-row:hover {
+      background: rgba(255, 106, 0, 0.1);
+      border-color: rgba(255, 106, 0, 0.3);
     }
 
     .home-info-scroll-container {
@@ -339,7 +457,6 @@
       opacity: 0;
       transform: translateY(40px) scale(0.98);
       transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: opacity, transform;
     }
 
     .scroll-anim.animate-in {
@@ -348,7 +465,7 @@
     }
 
     .info-section-title {
-      font-size: 2.8rem;
+      font-size: 2.5rem;
       color: var(--text-white);
       text-align: center;
       text-shadow: 0 0 20px rgba(255, 106, 0, 0.4);
@@ -356,16 +473,14 @@
     }
 
     .info-large-text {
-      font-size: 1.25rem;
-      line-height: 2.1;
+      font-size: 1.15rem;
+      line-height: 2;
       color: var(--text-white);
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      margin-bottom: 25px;
     }
 
     .info-large-text strong {
       color: var(--primary-orange);
-      text-shadow: 0 0 12px var(--accent-glow);
     }
 
     .info-large-text a {
@@ -373,11 +488,6 @@
       text-decoration: none;
       font-weight: 800;
       border-bottom: 2px solid var(--primary-orange);
-      padding-bottom: 2px;
-    }
-
-    .info-large-text a:hover {
-      background: rgba(255, 106, 0, 0.15);
     }
   </style>
 </head>
@@ -388,8 +498,8 @@
     <div class="brand">Tonor's<span>-Tiers</span></div>
     
     <div class="nav-tabs">
-      <button class="nav-tab-btn active" onclick="slideToView(0)">Homepage & Info</button>
-      <button class="nav-tab-btn" onclick="slideToView(1)">Leaderboard</button>
+      <button class="nav-tab-btn active" onclick="slideToView(0)">Leaderboard</button>
+      <button class="nav-tab-btn" onclick="slideToView(1)">Homepage & Info</button>
       <button class="nav-tab-btn" onclick="slideToView(2)">Download</button>
     </div>
 
@@ -403,7 +513,60 @@
   <div class="viewport-container">
     <div class="slider-track" id="sliderTrack">
       
-      <!-- VIEW 0: Homepage & Merged Info -->
+      <!-- VIEW 0: Leaderboard (Now the Homepage) -->
+      <div class="view-panel">
+        <div class="leaderboard-container">
+          <div class="card-header" style="text-align: center; margin-bottom: 10px;">
+            <h2 style="font-size: 1.8rem;">Community Rankings</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">*Official MCTiers V2 API integration paired with local data.*</p>
+            <button class="refresh-btn" onclick="fetchAndRenderLeaderboard()">🔄 Refresh Leaderboard</button>
+          </div>
+
+          <!-- Controls: Search Input, Local Toggle & Mode Tabs -->
+          <div class="controls-wrapper">
+            <div class="search-filter-row">
+              <input type="text" id="playerSearch" class="search-box" placeholder="🔍 Search player by name..." oninput="filterPlayers()">
+              <button id="localToggleBtn" class="local-filter-btn" onclick="toggleLocalOnlyFilter()">⭐ Local Only: OFF</button>
+            </div>
+            
+            <div class="tabs-nav">
+              <button class="sub-tab-btn active" onclick="switchSubTab(event, 'sub-overall')">Overall</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-sword')" data-slug="sword">Sword</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-axe')" data-slug="axe">Axe</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-netherite-pot')" data-slug="netherite-pot">Netherite Pot</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-diamond-pot')" data-slug="diamond-pot">Diamond Pot</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-smp')" data-slug="smp">SMP</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-uhc')" data-slug="uhc">UHC</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-mace')" data-slug="mace">Mace</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-spear-mace')" data-slug="spear-mace">Spear-Mace</button>
+            </div>
+          </div>
+
+          <div class="card" style="max-width: 100%; padding: 20px; flex: 1; overflow-y: auto;">
+            
+            <!-- OVERALL TAB -->
+            <div id="sub-overall" class="sub-tab-content active">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Total Points</th><th>Combat Title</th></tr></thead>
+                <tbody id="overall-tbody"></tbody>
+              </table>
+            </div>
+
+            <!-- MCTiers V2 MODE TIER COLUMNS TABS -->
+            <div id="sub-sword" class="sub-tab-content" data-mode="sword"></div>
+            <div id="sub-axe" class="sub-tab-content" data-mode="axe"></div>
+            <div id="sub-netherite-pot" class="sub-tab-content" data-mode="netherite-pot"></div>
+            <div id="sub-diamond-pot" class="sub-tab-content" data-mode="diamond-pot"></div>
+            <div id="sub-smp" class="sub-tab-content" data-mode="smp"></div>
+            <div id="sub-uhc" class="sub-tab-content" data-mode="uhc"></div>
+            <div id="sub-mace" class="sub-tab-content" data-mode="mace"></div>
+            <div id="sub-spear-mace" class="sub-tab-content" data-mode="spear-mace"></div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: Homepage & Merged Info -->
       <div class="view-panel">
         <div class="home-info-scroll-container" id="scrollContainer">
           
@@ -419,7 +582,7 @@
             <h2 class="info-section-title scroll-anim">System Submission Guide</h2>
             <p style="text-align: center; color: var(--text-muted); font-size: 1.1rem; margin-bottom: 50px;" class="scroll-anim">*Step-by-step instructions on how to get tested and officially ranked.*</p>
                         
-            <p class="info-large-text scroll-anim">*<strong>Step 1:</strong> Find a friend or someone you know to consent to duel you in an FT5 match in any of our supported game modes: <strong>Mace, Spear-Mace, UHC, Sword, Axe, Diamond Pot, Netherite Pot, Diamond SMP, SMP</strong>.*</p>
+            <p class="info-large-text scroll-anim">*<strong>Step 1:</strong> Find a friend or someone you know to consent to duel you in an FT5 match in any of our supported MCTiers game modes.*</p>
             
             <p class="info-large-text scroll-anim">*<strong>Step 2:</strong> Record you and your opponent fighting. When the match concludes, end the recording.*</p>
             
@@ -429,107 +592,9 @@
             
             <p class="info-large-text scroll-anim">*<strong>Step 5:</strong> Navigate to the <code>#request-an-analyst</code> channel and tag <code>@analyst</code>.*</p>
             
-            <p class="info-large-text scroll-anim" style="margin-bottom: 60px;">*Once you are officially verified and marked safe by the analyst, you will be added directly to the <strong>Leaderboard</strong> tab!*</p>
+            <p class="info-large-text scroll-anim" style="margin-bottom: 60px;">*Once you are officially verified and marked safe by the analyst, your MCTiers rankings sync live via public API!*</p>
           </div>
 
-        </div>
-      </div>
-
-      <!-- VIEW 1: Leaderboard -->
-      <div class="view-panel">
-        <div class="leaderboard-container">
-          <div class="card-header" style="text-align: center; margin-bottom: 20px;">
-            <h2 style="font-size: 2rem;">Community Rankings</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">*Live community tier list pulled from database.*</p>
-            <button class="refresh-btn" onclick="fetchAndRenderLeaderboard()">🔄 Refresh Leaderboard</button>
-          </div>
-
-          <div class="tabs-nav" style="position: static; transform: none; margin-bottom: 20px;">
-            <button class="sub-tab-btn active" onclick="switchSubTab(event, 'sub-overall')">Overall</button>
-            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-mace')">Mace</button>
-            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-spear-mace')">Spear-Mace</button>
-            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-sword')">Sword</button>
-            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-axe')">Axe</button>
-            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-uhc')">UHC</button>
-            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-smp')">SMP</button>
-            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-diamond-smp')">Diamond SMP</button>
-            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-netherite-pot')">Netherite Pot</button>
-            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-diamond-pot')">Diamond Pot</button>
-          </div>
-
-          <div class="card" style="max-width: 100%; padding: 20px;">
-            
-            <div id="sub-overall" class="sub-tab-content active">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Total Points</th><th>Combat Title</th></tr></thead>
-                <tbody id="overall-tbody"></tbody>
-              </table>
-            </div>
-
-            <div id="sub-mace" class="sub-tab-content">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
-                <tbody id="mace-tbody"></tbody>
-              </table>
-            </div>
-
-            <div id="sub-spear-mace" class="sub-tab-content">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
-                <tbody id="spear-mace-tbody"></tbody>
-              </table>
-            </div>
-
-            <div id="sub-sword" class="sub-tab-content">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
-                <tbody id="sword-tbody"></tbody>
-              </table>
-            </div>
-
-            <div id="sub-axe" class="sub-tab-content">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
-                <tbody id="axe-tbody"></tbody>
-              </table>
-            </div>
-
-            <div id="sub-uhc" class="sub-tab-content">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
-                <tbody id="uhc-tbody"></tbody>
-              </table>
-            </div>
-
-            <div id="sub-smp" class="sub-tab-content">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
-                <tbody id="smp-tbody"></tbody>
-              </table>
-            </div>
-
-            <div id="sub-diamond-smp" class="sub-tab-content">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
-                <tbody id="diamond-smp-tbody"></tbody>
-              </table>
-            </div>
-
-            <div id="sub-netherite-pot" class="sub-tab-content">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
-                <tbody id="netherite-pot-tbody"></tbody>
-              </table>
-            </div>
-
-            <div id="sub-diamond-pot" class="sub-tab-content">
-              <table class="rank-table">
-                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
-                <tbody id="diamond-pot-tbody"></tbody>
-              </table>
-            </div>
-
-          </div>
         </div>
       </div>
 
@@ -549,6 +614,36 @@
   </div>
 
 <script>
+  // ==========================================
+  // CORRECTED LOCAL PLAYERS DATA & POINTS
+  // ==========================================
+  let localLeaderboardData = { 
+    overall: [
+      { name: "7lamingo", points: 22 },       // 10 (HT3 Mace) + 6 (LT3 UHC) + 6 (LT3 Sword)
+      { name: "gameberker", points: 7 },       // 4 (HT4 UHC) + 3 (LT4 Sword)
+      { name: "KhalidGaming36", points: 1 }   // 1 (LT5 Sword)
+    ], 
+    modes: {
+      "sword": { 
+        "3": [{ name: "7lamingo" }],
+        "4": [{ name: "gameberker" }],
+        "5": [{ name: "KhalidGaming36" }]
+      },
+      "uhc": { 
+        "3": [{ name: "7lamingo" }],
+        "4": [{ name: "gameberker" }]
+      },
+      "mace": { 
+        "3": [{ name: "7lamingo" }]
+      }
+    } 
+  };
+  // ==========================================
+
+  let globalApiOverall = [];
+  let cachedModeData = {};
+  let showLocalOnly = false;
+
   function slideToView(index) {
     const track = document.getElementById("sliderTrack");
     track.style.transform = `translateX(-${index * 100}vw)`;
@@ -568,15 +663,28 @@
     document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     evt.currentTarget.classList.add('active');
+
+    document.getElementById("playerSearch").value = "";
+    filterPlayers();
+
+    const container = document.getElementById(tabId);
+    if (container && container.dataset.mode && container.innerHTML.trim() === "") {
+      fetchModeRankings(container.dataset.mode, tabId);
+    }
   }
 
-  const tierPoints = {
-    "HT1": 60, "LT1": 45,
-    "HT2": 30, "LT2": 20,
-    "HT3": 10, "LT3": 6,
-    "HT4": 4,  "LT4": 3,
-    "HT5": 2,  "LT5": 1
-  };
+  function toggleLocalOnlyFilter() {
+    showLocalOnly = !showLocalOnly;
+    const btn = document.getElementById("localToggleBtn");
+    if (showLocalOnly) {
+      btn.classList.add("active");
+      btn.textContent = "⭐ Local Only: ON";
+    } else {
+      btn.classList.remove("active");
+      btn.textContent = "⭐ Local Only: OFF";
+    }
+    filterPlayers();
+  }
 
   function getCombatTitle(points) {
     if (points >= 400) return "Combat Grandmaster";
@@ -590,126 +698,169 @@
 
   async function fetchAndRenderLeaderboard() {
     try {
-      // Using GitHub API endpoint to pull the raw content without CDN caching delays
-      const apiUrl = `https://api.github.com/repos/Ysehwell6/Tonor-s-Tiers/contents/leaderboard.json?t=${new Date().getTime()}`;
-      const response = await fetch(apiUrl, {
-        headers: {
-          'Accept': 'application/vnd.github.v3.raw'
-        }
-      });
+      const overallUrl = `https://mctiers.com/api/v2/mode/overall?count=50`;
+      const response = await fetch(overallUrl);
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch leaderboard data from GitHub API');
+      if (!response.ok) throw new Error('Failed to fetch overall rankings from MCTiers API');
+      
+      let apiPlayers = await response.json();
+      apiPlayers = apiPlayers.filter(p => p.name.toLowerCase() !== 'marlowww');
+      
+      const localOverallFormatted = (localLeaderboardData.overall || []).map(p => ({ ...p, isLocal: true }));
+      
+      // Combine and sort by points descending so local players sit correctly in the ranks
+      globalApiOverall = [...localOverallFormatted, ...apiPlayers];
+      globalApiOverall.sort((a, b) => (b.points || 0) - (a.points || 0));
+      
+      renderOverallLeaderboard(globalApiOverall);
+
+      const activeModeTab = document.querySelector('.sub-tab-content.active[data-mode]');
+      if (activeModeTab) {
+        fetchModeRankings(activeModeTab.dataset.mode, activeModeTab.id);
       }
-      
-      const data = await response.json();
-      renderLeaderboard(data);
     } catch (error) {
-      console.error("Error loading leaderboard:", error);
-      document.getElementById("overall-tbody").innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">Could not load leaderboard data. Try refreshing.</td></tr>`;
+      console.error("Error loading API leaderboard:", error);
+      const localOverallFormatted = (localLeaderboardData.overall || []).map(p => ({ ...p, isLocal: true }));
+      globalApiOverall = localOverallFormatted;
+      globalApiOverall.sort((a, b) => (b.points || 0) - (a.points || 0));
+      renderOverallLeaderboard(globalApiOverall);
     }
   }
 
-  function renderLeaderboard(leaderboardData) {
-    const players = leaderboardData.players || [];
-    const playerMap = {};
-    const modeLists = {
-      "Mace": [],
-      "Spear-Mace": [],
-      "Sword": [],
-      "Axe": [],
-      "UHC": [],
-      "SMP": [],
-      "Diamond SMP": [],
-      "Netherite Pot": [],
-      "Diamond Pot": []
-    };
-
-    players.forEach(p => {
-      const name = p.name;
-      const mode = p.mode;
-      const tier = p.tier;
-
-      if (modeLists[mode]) {
-        modeLists[mode].push({ name, tier });
-      }
-
-      if (!playerMap[name]) {
-        playerMap[name] = { name, ratings: [] };
-      }
-      playerMap[name].ratings.push({ mode, tier });
-    });
-
-    const processedOverall = Object.values(playerMap).map(p => {
-      let totalPts = 0;
-      p.ratings.forEach(r => {
-        totalPts += (tierPoints[r.tier.toUpperCase()] || 0);
-      });
-      return { name: p.name, points: totalPts, title: getCombatTitle(totalPts) };
-    });
-
-    processedOverall.sort((a, b) => b.points - a.points);
-
+  function renderOverallLeaderboard(players) {
     const overallTbody = document.getElementById("overall-tbody");
     overallTbody.innerHTML = "";
-    if (processedOverall.length === 0) {
+
+    if (!players || players.length === 0) {
       overallTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">No players found.</td></tr>`;
-    } else {
-      processedOverall.forEach((item, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td>
-            <div class="player-cell">
-              <img class="player-skin" src="https://crafthead.net/helm/${item.name}/64" alt="${item.name}">
-              <span class="player-name">${item.name}</span>
-            </div>
-          </td>
-          <td><strong>${item.points} pts</strong></td>
-          <td><span class="title-badge">${item.title}</span></td>
-        `;
-        overallTbody.appendChild(tr);
-      });
+      return;
     }
 
-    const modeKeyMap = {
-      "Mace": "mace-tbody",
-      "Spear-Mace": "spear-mace-tbody",
-      "Sword": "sword-tbody",
-      "Axe": "axe-tbody",
-      "UHC": "uhc-tbody",
-      "SMP": "smp-tbody",
-      "Diamond SMP": "diamond-smp-tbody",
-      "Netherite Pot": "netherite-pot-tbody",
-      "Diamond Pot": "diamond-pot-tbody"
-    };
+    players.forEach((item, index) => {
+      const points = item.points || 0;
+      const title = getCombatTitle(points);
+      const localTag = item.isLocal ? `<span class="local-badge">Local Tier</span>` : '';
+      const tr = document.createElement("tr");
+      tr.className = "player-row-item";
+      tr.dataset.name = item.name.toLowerCase();
+      tr.dataset.isLocal = item.isLocal ? "true" : "false";
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>
+          <div class="player-cell">
+            <img class="player-skin" src="https://crafthead.net/helm/${item.name}/64" alt="${item.name}">
+            <span class="player-name">${item.name}</span>
+            ${localTag}
+          </div>
+        </td>
+        <td><strong>${points} pts</strong></td>
+        <td><span class="title-badge">${title}</span></td>
+      `;
+      overallTbody.appendChild(tr);
+    });
+  }
 
-    for (const [modeName, tbodyId] of Object.entries(modeKeyMap)) {
-      const tbody = document.getElementById(tbodyId);
-      if (!tbody) continue;
-      tbody.innerHTML = "";
-      const list = modeLists[modeName] || [];
+  async function fetchModeRankings(gamemodeSlug, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
 
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">No entries for ${modeName}.</td></tr>`;
+    container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px;">Loading rankings for ${gamemodeSlug}...</div>`;
+
+    try {
+      const modeUrl = `https://mctiers.com/api/v2/mode/${gamemodeSlug}?count=50`;
+      const response = await fetch(modeUrl);
+
+      if (!response.ok) throw new Error(`Failed to fetch rankings for mode: ${gamemodeSlug}`);
+
+      let apiTiersData = await response.json(); 
+
+      for (let i = 1; i <= 5; i++) {
+        let key = String(i);
+        if (apiTiersData[key]) {
+          apiTiersData[key] = apiTiersData[key].filter(p => p.name.toLowerCase() !== 'marlowww');
+        }
+      }
+      
+      let localMode = (localLeaderboardData.modes && localLeaderboardData.modes[gamemodeSlug]) ? localLeaderboardData.modes[gamemodeSlug] : {};
+      let mergedTiers = {};
+      
+      for (let i = 1; i <= 5; i++) {
+        let apiArr = apiTiersData[i] || apiTiersData[String(i)] || [];
+        let localArr = (localMode[i] || localMode[String(i)] || []).map(p => ({ ...p, isLocal: true }));
+        mergedTiers[i] = [...localArr, ...apiArr];
+      }
+
+      cachedModeData[gamemodeSlug] = mergedTiers;
+      renderModeTiers(mergedTiers, containerId);
+    } catch (error) {
+      console.error(`Error loading mode rankings for ${gamemodeSlug}:`, error);
+      let localMode = (localLeaderboardData.modes && localLeaderboardData.modes[gamemodeSlug]) ? localLeaderboardData.modes[gamemodeSlug] : { "1": [], "2": [], "3": [], "4": [], "5": [] };
+      let mappedLocal = {};
+      for (let i = 1; i <= 5; i++) {
+        mappedLocal[i] = (localMode[i] || []).map(p => ({ ...p, isLocal: true }));
+      }
+      renderModeTiers(mappedLocal, containerId);
+    }
+  }
+
+  function renderModeTiers(tiersObj, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let html = `<div class="tier-columns-grid">`;
+    for (let i = 1; i <= 5; i++) {
+      let colPlayers = tiersObj[i] || tiersObj[String(i)] || [];
+      let rowsHtml = "";
+
+      if (colPlayers.length === 0) {
+        rowsHtml = `<div style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:15px;">No players</div>`;
       } else {
-        list.forEach((entry, index) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${index + 1}</td>
-            <td>
-              <div class="player-cell">
-                <img class="player-skin" src="https://crafthead.net/helm/${entry.name}/64" alt="${entry.name}">
-                <span class="player-name">${entry.name}</span>
+        colPlayers.forEach(player => {
+          const localTag = player.isLocal ? `<span class="local-badge" style="font-size:0.55rem;">Local</span>` : '';
+          rowsHtml += `
+            <div class="tier-player-row player-row-item" data-name="${player.name.toLowerCase()}" data-is-local="${player.isLocal ? 'true' : 'false'}">
+              <div class="player-info-group" style="display:flex; align-items:center; gap:8px;">
+                <img class="player-skin" src="https://crafthead.net/helm/${player.name}/64" alt="${player.name}" style="width:28px; height:28px;">
+                <span class="player-name" style="font-size:0.85rem;">${player.name}</span>
+                ${localTag}
               </div>
-            </td>
-            <td><span class="tier-badge">${entry.tier}</span></td>
-            <td style="color:var(--text-muted)">${modeName}</td>
+            </div>
           `;
-          tbody.appendChild(tr);
         });
       }
+
+      html += `
+        <div class="tier-column-card tier-col-${i}">
+          <div class="tier-column-header">Tier #${i}</div>
+          <div class="tier-column-body">
+            ${rowsHtml}
+          </div>
+        </div>
+      `;
     }
+    html += `</div>`;
+    container.innerHTML = html;
+  }
+
+  function filterPlayers() {
+    const query = document.getElementById("playerSearch").value.toLowerCase().trim();
+    const activeContent = document.querySelector('.sub-tab-content.active');
+    if (!activeContent) return;
+
+    const items = activeContent.querySelectorAll('.player-row-item');
+    items.forEach(item => {
+      const name = item.dataset.name || "";
+      const isLocal = item.dataset.isLocal === "true";
+
+      const matchesSearch = name.includes(query);
+      const matchesLocalFilter = !showLocalOnly || isLocal;
+
+      if (matchesSearch && matchesLocalFilter) {
+        item.style.display = "";
+      } else {
+        item.style.display = "none";
+      }
+    });
   }
 
   function initScrollAnimations() {
@@ -734,7 +885,7 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    slideToView(0); 
+    slideToView(0); // Starts on Leaderboard view (index 0)
     fetchAndRenderLeaderboard();
     initScrollAnimations();
   });

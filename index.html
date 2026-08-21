@@ -194,24 +194,6 @@
       font-size: 0.9rem;
     }
 
-    .refresh-btn {
-      background: var(--primary-orange);
-      color: #000;
-      border: none;
-      padding: 6px 14px;
-      margin-top: 8px;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 0 10px var(--accent-glow);
-    }
-
-    .refresh-btn:hover {
-      background: #ff8533;
-    }
-
     .leaderboard-container {
       width: 100%;
       max-width: 1300px;
@@ -520,7 +502,6 @@
           <div class="card-header" style="text-align: center; margin-bottom: 10px;">
             <h2 style="font-size: 1.8rem;">Community Rankings</h2>
             <p style="color: var(--text-muted); font-size: 0.85rem;">*Official MCTiers V2 API integration paired with local data.*</p>
-            <button class="refresh-btn" onclick="fetchAndRenderLeaderboard()">🔄 Refresh Leaderboard</button>
           </div>
 
           <!-- Controls: Search Input, Local Toggle & Mode Tabs -->
@@ -534,8 +515,8 @@
               <button class="sub-tab-btn active" onclick="switchSubTab(event, 'sub-overall')">Overall</button>
               <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-sword')" data-slug="sword">Sword</button>
               <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-axe')" data-slug="axe">Axe</button>
-              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-netherite-pot')" data-slug="netherite-pot">Netherite Pot</button>
-              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-diamond-pot')" data-slug="diamond-pot">Diamond Pot</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-nethop')" data-slug="nethop">NethOP</button>
+              <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-pot')" data-slug="pot">Pot</button>
               <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-smp')" data-slug="smp">SMP</button>
               <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-uhc')" data-slug="uhc">UHC</button>
               <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-mace')" data-slug="mace">Mace</button>
@@ -556,8 +537,8 @@
             <!-- MCTiers V2 MODE TIER COLUMNS TABS -->
             <div id="sub-sword" class="sub-tab-content" data-mode="sword"></div>
             <div id="sub-axe" class="sub-tab-content" data-mode="axe"></div>
-            <div id="sub-netherite-pot" class="sub-tab-content" data-mode="netherite-pot"></div>
-            <div id="sub-diamond-pot" class="sub-tab-content" data-mode="diamond-pot"></div>
+            <div id="sub-nethop" class="sub-tab-content" data-mode="nethop"></div>
+            <div id="sub-pot" class="sub-tab-content" data-mode="pot"></div>
             <div id="sub-smp" class="sub-tab-content" data-mode="smp"></div>
             <div id="sub-uhc" class="sub-tab-content" data-mode="uhc"></div>
             <div id="sub-mace" class="sub-tab-content" data-mode="mace"></div>
@@ -616,7 +597,7 @@
 
 <script>
   // ==========================================
-  // CORRECTED LOCAL PLAYERS DATA & POINTS
+  // LOCAL PLAYERS DATA & POINTS
   // ==========================================
   let localLeaderboardData = { 
     overall: [
@@ -709,7 +690,6 @@
       
       const localOverallFormatted = (localLeaderboardData.overall || []).map(p => ({ ...p, isLocal: true }));
       
-      // Combine and sort by points descending so local players sit correctly in the ranks
       globalApiOverall = [...localOverallFormatted, ...apiPlayers];
       globalApiOverall.sort((a, b) => (b.points || 0) - (a.points || 0));
       

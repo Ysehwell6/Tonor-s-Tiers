@@ -24,7 +24,6 @@
       padding: 0;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-style: italic;
-      /* Custom Orange & Black Scrollbar */
       scrollbar-width: thin;
       scrollbar-color: var(--primary-orange) var(--bg-main);
     }
@@ -57,7 +56,6 @@
         radial-gradient(circle at 90% 80%, rgba(255, 68, 0, 0.05) 0%, transparent 40%);
     }
 
-    /* Top Navigation Bar with True See-Through Liquid Glass */
     .top-bar {
       width: 100%;
       position: fixed;
@@ -117,7 +115,6 @@
       box-shadow: 0 0 20px var(--accent-glow);
     }
 
-    /* Running status badge in corner */
     .status-badge {
       display: flex;
       align-items: center;
@@ -147,7 +144,6 @@
       100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
-    /* Slider Layout for 3 Views */
     .viewport-container {
       position: relative;
       width: 100vw;
@@ -174,7 +170,6 @@
       overflow-y: auto;
     }
 
-    /* Liquid Glass Cards */
     .card {
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
@@ -205,7 +200,6 @@
       line-height: 1.5;
     }
 
-    /* Form Styles */
     .form-group {
       margin-bottom: 20px;
       text-align: left;
@@ -289,7 +283,6 @@
       text-align: left;
     }
 
-    /* Leaderboard Styles */
     .leaderboard-container {
       width: 100%;
       max-width: 950px;
@@ -396,7 +389,6 @@
       box-shadow: 0 0 10px var(--accent-glow);
     }
 
-    /* Merged Homepage & Info Layout */
     .home-info-scroll-container {
       width: 100%;
       max-width: 850px;
@@ -409,7 +401,6 @@
       gap: 40px;
     }
 
-    /* Scroll Animation Classes */
     .scroll-anim {
       opacity: 0;
       transform: translateY(40px) scale(0.98);
@@ -422,7 +413,6 @@
       transform: translateY(0) scale(1);
     }
 
-    /* Big Zero-Innerbox Text Styles */
     .info-section-title {
       font-size: 2.8rem;
       color: var(--text-white);
@@ -456,7 +446,6 @@
       background: rgba(255, 106, 0, 0.15);
     }
 
-    /* Modal progress tracker */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -532,14 +521,12 @@
   <div class="top-bar">
     <div class="brand">Tonor's<span>-Tiers</span></div>
     
-    <!-- Centered Tabs -->
     <div class="nav-tabs">
       <button class="nav-tab-btn" onclick="slideToView(0)">Tier-Testing</button>
       <button class="nav-tab-btn active" onclick="slideToView(1)">Homepage & Info</button>
       <button class="nav-tab-btn" onclick="slideToView(2)">Leaderboard</button>
     </div>
 
-    <!-- Running Badge with Green Dot -->
     <div class="status-badge">
       <div class="green-dot"></div>
       <span>running</span>
@@ -580,7 +567,6 @@
       <div class="view-panel">
         <div class="home-info-scroll-container" id="scrollContainer">
           
-          <!-- What is Tonor's Tiers Section -->
           <div style="padding: 10px 0;" class="scroll-anim">
             <h2 class="info-section-title">What is Tonor's Tiers?</h2>
             <p style="text-align: center; color: var(--primary-orange); font-weight: 700; font-size: 1.1rem; margin-bottom: 24px;">*Unfiltered, objective AI mechanical audits for Minecraft PvP.*</p>
@@ -589,7 +575,6 @@
             </p>
           </div>
 
-          <!-- Info Section Below -->
           <div style="padding: 10px 0;">
             <h2 class="info-section-title scroll-anim">System Submission Guide</h2>
             <p style="text-align: center; color: var(--text-muted); font-size: 1.1rem; margin-bottom: 50px;" class="scroll-anim">*Step-by-step instructions on how to get tested and officially ranked.*</p>
@@ -728,7 +713,6 @@
   </div>
 
 <script>
-  // Slide Management
   function slideToView(index) {
     const track = document.getElementById("sliderTrack");
     track.style.transform = `translateX(-${index * 100}vw)`;
@@ -750,7 +734,6 @@
     evt.currentTarget.classList.add('active');
   }
 
-  // Hardcoded Leaderboard Data with Your Players
   const localLeaderboardData = {
     players: [
       { name: "7lamingo", mode: "Mace", tier: "HT3" },
@@ -820,7 +803,6 @@
 
     processedOverall.sort((a, b) => b.points - a.points);
 
-    // Populate Overall Table
     const overallTbody = document.getElementById("overall-tbody");
     overallTbody.innerHTML = "";
     if (processedOverall.length === 0) {
@@ -843,7 +825,6 @@
       });
     }
 
-    // Populate Mode Tables
     const modeKeyMap = {
       "Mace": "mace-tbody",
       "Spear-Mace": "spear-mace-tbody",
@@ -884,7 +865,6 @@
     }
   }
 
-  // Scroll Animation Observer
   function initScrollAnimations() {
     const scrollContainer = document.getElementById("scrollContainer");
     const animElements = document.querySelectorAll(".scroll-anim");
@@ -953,7 +933,6 @@
     });
   }
 
-  // Poll Google's server until video file state is ACTIVE
   async function waitForFileActive(fileUri, apiKey) {
     const statusUrl = `${fileUri}?key=${apiKey}`;
     let state = "PROCESSING";
@@ -1012,14 +991,14 @@
       modalSpeed.innerText = "⏳ PROCESSING";
       statusDiv.innerText = "⏳ Waiting for AI to process video stream...";
       
-      // Wait for Google's servers to fully process the video file
       await waitForFileActive(fileUri, keyInput);
 
       clearInterval(timerInterval);
       modalSpeed.innerText = "⚡ ANALYZING";
       statusDiv.innerText = "⏳ Running AI mechanical audit...";
 
-      const generateUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${keyInput}`;
+      // Updated to use the correct gemini-3.5-flash-lite endpoint
+      const generateUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${keyInput}`;
       const genResponse = await fetch(generateUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

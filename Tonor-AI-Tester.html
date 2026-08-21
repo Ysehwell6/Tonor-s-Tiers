@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tonor's Tiers | AI PvP Auditing & Leaderboards</title>
+  <!-- CryptoJS for AES Encryption -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+    :root {
+      --bg-main: #0a0a0a;
+      --bg-card: rgba(20, 20, 20, 0.65);
+      --primary-orange: #ff6a00;
+      --accent-glow: rgba(255, 106, 0, 0.35);
+      --text-white: #ffffff;
+      --text-muted: #a3a3a3;
+      --glass-bg: rgba(18, 18, 18, 0.65);
+      --glass-border: rgba(255, 106, 0, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-style: italic;
+      /* Custom Orange & Black Scrollbar */
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary-orange) var(--bg-main);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-main);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-orange);
+      border-radius: 4px;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ff8533;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-white);
+      overflow-x: hidden;
+      height: 100vh;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 106, 0, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(255, 68, 0, 0.05) 0%, transparent 40%);
+    }
+
+    /* Top Navigation Bar with True See-Through Liquid Glass */
+    .top-bar {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+      background: rgba(10, 10, 10, 0.25);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255, 106, 0, 0.3);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--text-white);
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 10px rgba(255, 106, 0, 0.5);
+    }
+
+    .brand span {
+      color: var(--primary-orange);
+    }
+
+    .nav-tabs {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px;
+      border-radius: 16px;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+    }
+
+    .nav-tab-btn.active {
+      background: var(--primary-orange);
+      color: #000;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    /* Running status badge in corner */
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--glass-border);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-white);
+      backdrop-filter: blur(10px);
+    }
+
+    .green-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulse-glow 2s infinite;
+    }
+
+    @keyframes pulse-glow {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Slider Layout for 3 Views */
+    .viewport-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      padding-top: 80px;
+    }
+
+    .slider-track {
+      display: flex;
+      width: 300vw;
+      height: calc(100vh - 80px);
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .view-panel {
+      width: 100vw;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+
+    /* Liquid Glass Cards */
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 850px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 106, 0, 0.05);
+    }
+
+    .card-header {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .card-header h2 {
+      font-size: 2.2rem;
+      color: var(--text-white);
+      margin-bottom: 8px;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+
+    .card-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-white);
+    }
+
+    input[type="password"],
+    input[type="file"] {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.4);
+      color: var(--text-white);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    input[type="password"]:focus,
+    input[type="file"]:focus {
+      outline: none;
+      border-color: var(--primary-orange);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    small {
+      display: block;
+      margin-top: 6px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary-orange);
+      color: #000;
+      border: none;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 900;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .btn-submit:hover {
+      background: #ff8533;
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(255, 106, 0, 0.6);
+    }
+
+    #status {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--primary-orange);
+      font-size: 0.95rem;
+    }
+
+    #result {
+      margin-top: 24px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--glass-border);
+      border-left: 6px solid var(--primary-orange);
+      padding: 20px;
+      border-radius: 16px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      display: none;
+      text-align: left;
+    }
+
+    /* Leaderboard Styles */
+    .leaderboard-container {
+      width: 100%;
+      max-width: 950px;
+    }
+
+    .tabs-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .sub-tab-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+    }
+
+    .sub-tab-btn:hover {
+      background: rgba(255, 106, 0, 0.15);
+      color: var(--text-white);
+    }
+
+    .sub-tab-btn.active {
+      background: var(--primary-orange);
+      color: #000;
+      border-color: var(--primary-orange);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .sub-tab-content {
+      display: none;
+    }
+
+    .sub-tab-content.active {
+      display: block;
+    }
+
+    .rank-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .rank-table th, .rank-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .rank-table th {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .player-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .player-skin {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: #1a1a1a;
+      border: 1px solid var(--glass-border);
+      image-rendering: pixelated;
+    }
+
+    .player-name {
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .tier-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: rgba(255, 106, 0, 0.1);
+      color: var(--primary-orange);
+      border: 1px solid rgba(255, 106, 0, 0.3);
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.75rem;
+    }
+
+    .title-badge {
+      font-size: 0.7rem;
+      color: #000;
+      background: var(--primary-orange);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+      display: inline-block;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* Merged Homepage & Info Layout */
+    .home-info-scroll-container {
+      width: 100%;
+      max-width: 850px;
+      height: 100%;
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    /* Scroll Animation Classes */
+    .scroll-anim {
+      opacity: 0;
+      transform: translateY(40px) scale(0.98);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    .scroll-anim.animate-in {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Big Zero-Innerbox Text Styles */
+    .info-section-title {
+      font-size: 2.8rem;
+      color: var(--text-white);
+      text-align: center;
+      text-shadow: 0 0 20px rgba(255, 106, 0, 0.4);
+      margin-bottom: 10px;
+    }
+
+    .info-large-text {
+      font-size: 1.25rem;
+      line-height: 2.1;
+      color: var(--text-white);
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .info-large-text strong {
+      color: var(--primary-orange);
+      text-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .info-large-text a {
+      color: var(--primary-orange);
+      text-decoration: none;
+      font-weight: 800;
+      border-bottom: 2px solid var(--primary-orange);
+      padding-bottom: 2px;
+    }
+
+    .info-large-text a:hover {
+      background: rgba(255, 106, 0, 0.15);
+    }
+
+    /* Modal progress tracker */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 2000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      padding: 40px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .modal-speed {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--primary-orange);
+      margin-bottom: 2px;
+      text-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .modal-subtitle {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      padding: 2px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff4400, var(--primary-orange));
+      border-radius: 6px;
+      transition: width 0.15s ease-out;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .modal-footer-stats {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <div class="top-bar">
+    <div class="brand">Tonor's<span>-Tiers</span></div>
+    
+    <!-- Centered Tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab-btn" onclick="slideToView(0)">Tier-Testing</button>
+      <button class="nav-tab-btn active" onclick="slideToView(1)">Homepage & Info</button>
+      <button class="nav-tab-btn" onclick="slideToView(2)">Leaderboard</button>
+    </div>
+
+    <!-- Running Badge with Green Dot -->
+    <div class="status-badge">
+      <div class="green-dot"></div>
+      <span>running</span>
+    </div>
+  </div>
+
+  <!-- Horizontal Slider Container -->
+  <div class="viewport-container">
+    <div class="slider-track" id="sliderTrack">
+      
+      <!-- VIEW 0: Tier-Testing -->
+      <div class="view-panel">
+        <div class="card">
+          <div class="card-header">
+            <h2>Mechanical Audit Tool</h2>
+            <p>*Upload a match clip and let the AI analyze your mechanics with absolute precision.*</p>
+          </div>
+
+          <div class="form-group">
+            <label for="apiKey">Google Gemini API Key</label>
+            <input type="password" id="apiKey" placeholder="Enter Gemini API Key..." />
+            <small>*Secured locally with AES-256 encryption.*</small>
+          </div>
+
+          <div class="form-group">
+            <label for="videoFile">Upload Match Clip (MP4 / WebM)</label>
+            <input type="file" id="videoFile" accept="video/*" />
+          </div>
+
+          <button class="btn-submit" onclick="runTierTest()">Analyze Gameplay</button>
+
+          <div id="status"></div>
+          <div id="result"></div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: Homepage & Merged Info -->
+      <div class="view-panel">
+        <div class="home-info-scroll-container" id="scrollContainer">
+          
+          <!-- What is Tonor's Tiers Section (ZERO INNERBOX) -->
+          <div style="padding: 10px 0;" class="scroll-anim">
+            <h2 class="info-section-title">What is Tonor's Tiers?</h2>
+            <p style="text-align: center; color: var(--primary-orange); font-weight: 700; font-size: 1.1rem; margin-bottom: 24px;">*Unfiltered, objective AI mechanical audits for Minecraft PvP.*</p>
+            <p class="info-large-text">
+              *Tonor's Tiers eliminates bias from community placement reviews. By leveraging Google's advanced multimodal AI models, match clips are inspected down to the frame—evaluating crosshair placement, spacing, combo rhythm, and resource management with zero sugarcoating.*
+            </p>
+            <p class="info-large-text">
+              *The system utilizes fine-tuned system instructions to map visual player input directly to high-tier combat benchmarks. Every audit breaks down defensive weaknesses and offensive openings with precise, raw metrics.*
+            </p>
+          </div>
+
+          <!-- Info Section Below (ZERO INNERBOX) -->
+          <div style="padding: 10px 0;">
+            <h2 class="info-section-title scroll-anim">System Submission Guide</h2>
+            <p style="text-align: center; color: var(--text-muted); font-size: 1.1rem; margin-bottom: 50px;" class="scroll-anim">*Step-by-step instructions on how to get tested and officially ranked.*</p>
+            
+            <p class="info-large-text scroll-anim">*You <strong>NEED</strong> a Google Gemini API key to operate the local auditing software.*</p>
+            
+            <p class="info-large-text scroll-anim">*<strong>Step 1:</strong> Find a friend or someone you know to consent to duel you in an FT5 match in any of our supported game modes: <strong>Mace, Spear-Mace, UHC, Sword, Axe, Dia Pot, Neth Pot, Dia SMP, Neth SMP</strong>.*</p>
+            
+            <p class="info-large-text scroll-anim">*<strong>Step 2:</strong> Record you and your opponent fighting. When the match concludes, end the recording.*</p>
+            
+            <p class="info-large-text scroll-anim">*<strong>Step 3:</strong> Start a fresh screen-recording to capture you submitting that fight clip to the AI. Do not end that screen record until the AI finishes responding and you scroll down to show the entire response report.*</p>
+            
+            <p class="info-large-text scroll-anim">*<strong>Step 4:</strong> Upload both your fight clip and screen-recording to <a href="https://www.mediafire.com/" target="_blank">MediaFire</a>, then join the Tonor's Tiers Discord server at <a href="https://discord.gg/eusN8BYAg5" target="_blank">discord.gg/eusN8BYAg5</a>.*</p>
+            
+            <p class="info-large-text scroll-anim">*<strong>Step 5:</strong> Navigate to the <code>#request-an-analyst</code> channel and tag <code>@analyst</code>. Any other use of @ tagging is strictly prohibited and will result in a permanent ban.*</p>
+            
+            <p class="info-large-text scroll-anim">*<strong>Step 6:</strong> When an analyst is ready, they will open a private ticket tab where you will send both MediaFire clip links.*</p>
+            
+            <p class="info-large-text scroll-anim">*<strong>Step 7:</strong> The analyst will thoroughly inspect both video files to ensure zero editing and verify that the AI gave a fair, unaltered rating.*</p>
+            
+            <p class="info-large-text scroll-anim">*<strong>Outcomes of the Audit:</strong><br>
+            1. Your role is found invalid if the AI made an evaluation mistake; the analyst will then adjust your role up or down.<br>
+            2. If you are caught tampering with or modifying either video file, you <strong>WILL</strong> be permanently banned.*</p>
+            
+            <p class="info-large-text scroll-anim" style="margin-bottom: 60px;">*Once you are officially verified and marked safe by the analyst, you will be added directly to the <strong>Leaderboard</strong> tab!*</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- VIEW 2: Leaderboard -->
+      <div class="view-panel">
+        <div class="leaderboard-container">
+          <div class="card-header" style="text-align: center; margin-bottom: 20px;">
+            <h2 style="font-size: 2rem;">Community Rankings</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">*Hardcoded community tier list.*</p>
+          </div>
+
+          <div class="tabs-nav" style="position: static; transform: none; margin-bottom: 20px;">
+            <button class="sub-tab-btn active" onclick="switchSubTab(event, 'sub-overall')">Overall</button>
+            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-mace')">Mace</button>
+            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-spear-mace')">Spear-Mace</button>
+            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-sword')">Sword</button>
+            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-axe')">Axe</button>
+            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-uhc')">UHC</button>
+            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-smp')">SMP</button>
+            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-diamond-smp')">Diamond SMP</button>
+            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-netherite-pot')">Netherite Pot</button>
+            <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub-diamond-pot')">Diamond Pot</button>
+          </div>
+
+          <div class="card" style="max-width: 100%; padding: 20px;">
+            
+            <div id="sub-overall" class="sub-tab-content active">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Total Points</th><th>Combat Title</th></tr></thead>
+                <tbody id="overall-tbody"></tbody>
+              </table>
+            </div>
+
+            <div id="sub-mace" class="sub-tab-content">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
+                <tbody id="mace-tbody"></tbody>
+              </table>
+            </div>
+
+            <div id="sub-spear-mace" class="sub-tab-content">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
+                <tbody id="spear-mace-tbody"></tbody>
+              </table>
+            </div>
+
+            <div id="sub-sword" class="sub-tab-content">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
+                <tbody id="sword-tbody"></tbody>
+              </table>
+            </div>
+
+            <div id="sub-axe" class="sub-tab-content">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
+                <tbody id="axe-tbody"></tbody>
+              </table>
+            </div>
+
+            <div id="sub-uhc" class="sub-tab-content">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
+                <tbody id="uhc-tbody"></tbody>
+              </table>
+            </div>
+
+            <div id="sub-smp" class="sub-tab-content">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
+                <tbody id="smp-tbody"></tbody>
+              </table>
+            </div>
+
+            <div id="sub-diamond-smp" class="sub-tab-content">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
+                <tbody id="diamond-smp-tbody"></tbody>
+              </table>
+            </div>
+
+            <div id="sub-netherite-pot" class="sub-tab-content">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
+                <tbody id="netherite-pot-tbody"></tbody>
+              </table>
+            </div>
+
+            <div id="sub-diamond-pot" class="sub-tab-content">
+              <table class="rank-table">
+                <thead><tr><th>#</th><th>Player</th><th>Tier</th><th>Mode</th></tr></thead>
+                <tbody id="diamond-pot-tbody"></tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div id="uploadModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-speed" id="modalSpeed">0.00 Mbps</div>
+      <div class="modal-subtitle" id="modalSubtitle">UPLOAD SPEED</div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="modalProgressFill"></div>
+      </div>
+      <div class="modal-footer-stats">
+        <span id="modalPercent">0% there</span>
+        <span>Time: <strong id="modalTimer" style="color:var(--text-white);">00:00</strong></span>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Slide Management
+  function slideToView(index) {
+    const track = document.getElementById("sliderTrack");
+    track.style.transform = `translateX(-${index * 100}vw)`;
+
+    const buttons = document.querySelectorAll(".nav-tab-btn");
+    buttons.forEach((btn, idx) => {
+      if (idx === index) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+  }
+
+  function switchSubTab(evt, tabId) {
+    document.querySelectorAll('.sub-tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    evt.currentTarget.classList.add('active');
+  }
+
+  // Hardcoded Leaderboard Data
+  const localLeaderboardData = {
+    players: [
+      { name: "7lamingo", mode: "Mace", tier: "HT3" },
+      { name: "7lamingo", mode: "Sword", tier: "HT4" },
+      { name: "7lamingo", mode: "UHC", tier: "LT3" },
+      { name: "gameberker", mode: "UHC", tier: "HT4" },
+      { name: "gameberker", mode: "Sword", tier: "LT4" },
+      { name: "KhalidGaming36", mode: "Sword", tier: "LT5" }
+    ]
+  };
+
+  // Points mapping & Title generator
+  const tierPoints = {
+    "HT1": 60, "LT1": 45,
+    "HT2": 30, "LT2": 20,
+    "HT3": 10, "LT3": 6,
+    "HT4": 4,  "LT4": 3,
+    "HT5": 2,  "LT5": 1
+  };
+
+  function getCombatTitle(points) {
+    if (points >= 400) return "Combat Grandmaster";
+    if (points >= 250) return "Combat Master";
+    if (points >= 100) return "Combat Ace";
+    if (points >= 50) return "Combat Specialist";
+    if (points >= 20) return "Combat Cadet";
+    if (points >= 10) return "Combat Novice";
+    return "Rookie";
+  }
+
+  function renderLeaderboard() {
+    const players = localLeaderboardData.players || [];
+    const playerMap = {};
+    const modeLists = {
+      "Mace": [],
+      "Spear-Mace": [],
+      "Sword": [],
+      "Axe": [],
+      "UHC": [],
+      "SMP": [],
+      "Diamond SMP": [],
+      "Netherite Pot": [],
+      "Diamond Pot": []
+    };
+
+    players.forEach(p => {
+      const name = p.name;
+      const mode = p.mode;
+      const tier = p.tier;
+
+      if (modeLists[mode]) {
+        modeLists[mode].push({ name, tier });
+      }
+
+      if (!playerMap[name]) {
+        playerMap[name] = { name, ratings: [] };
+      }
+      playerMap[name].ratings.push({ mode, tier });
+    });
+
+    const processedOverall = Object.values(playerMap).map(p => {
+      let totalPts = 0;
+      p.ratings.forEach(r => {
+        totalPts += (tierPoints[r.tier.toUpperCase()] || 0);
+      });
+      return { name: p.name, points: totalPts, title: getCombatTitle(totalPts) };
+    });
+
+    processedOverall.sort((a, b) => b.points - a.points);
+
+    // Populate Overall Table
+    const overallTbody = document.getElementById("overall-tbody");
+    overallTbody.innerHTML = "";
+    if (processedOverall.length === 0) {
+      overallTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">No players found.</td></tr>`;
+    } else {
+      processedOverall.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>
+            <div class="player-cell">
+              <img class="player-skin" src="https://crafthead.net/helm/${item.name}/64" alt="${item.name}">
+              <span class="player-name">${item.name}</span>
+            </div>
+          </td>
+          <td><strong>${item.points} pts</strong></td>
+          <td><span class="title-badge">${item.title}</span></td>
+        `;
+        overallTbody.appendChild(tr);
+      });
+    }
+
+    // Populate Mode Tables
+    const modeKeyMap = {
+      "Mace": "mace-tbody",
+      "Spear-Mace": "spear-mace-tbody",
+      "Sword": "sword-tbody",
+      "Axe": "axe-tbody",
+      "UHC": "uhc-tbody",
+      "SMP": "smp-tbody",
+      "Diamond SMP": "diamond-smp-tbody",
+      "Netherite Pot": "netherite-pot-tbody",
+      "Diamond Pot": "diamond-pot-tbody"
+    };
+
+    for (const [modeName, tbodyId] of Object.entries(modeKeyMap)) {
+      const tbody = document.getElementById(tbodyId);
+      if (!tbody) continue;
+      tbody.innerHTML = "";
+      const list = modeLists[modeName] || [];
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">No entries for ${modeName}.</td></tr>`;
+      } else {
+        list.forEach((entry, index) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>
+              <div class="player-cell">
+                <img class="player-skin" src="https://crafthead.net/helm/${entry.name}/64" alt="${entry.name}">
+                <span class="player-name">${entry.name}</span>
+              </div>
+            </td>
+            <td><span class="tier-badge">${entry.tier}</span></td>
+            <td style="color:var(--text-muted)">${modeName}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+  }
+
+  // Scroll Animation Observer with safe margins
+  function initScrollAnimations() {
+    const scrollContainer = document.getElementById("scrollContainer");
+    const animElements = document.querySelectorAll(".scroll-anim");
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("animate-in");
+        } else {
+          entry.target.classList.remove("animate-in");
+        }
+      });
+    }, {
+      root: scrollContainer,
+      rootMargin: "-100px 0px -50px 0px",
+      threshold: 0.1
+    });
+
+    animElements.forEach(el => observer.observe(el));
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    slideToView(1); // Default to Homepage & Info view
+    renderLeaderboard();
+    initScrollAnimations();
+  });
+
+  // API Key & Upload logic
+  const PASSPHRASE = "tonors-tester-secure-salt";
+  window.onload = function() {
+    const encryptedKey = localStorage.getItem("enc_gemini_key_v2");
+    if (encryptedKey) {
+      try {
+        const bytes = CryptoJS.AES.decrypt(encryptedKey, PASSPHRASE);
+        const originalKey = bytes.toString(CryptoJS.enc.Utf8);
+        if (originalKey) document.getElementById("apiKey").value = originalKey;
+      } catch (e) {}
+    }
+  };
+
+  function uploadFileWithProgress(url, file, onProgress) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("X-Goog-Upload-Protocol", "raw");
+      xhr.setRequestHeader("Content-Type", file.type);
+      const startTime = Date.now();
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          const elapsedSec = (Date.now() - startTime) / 1000;
+          let speedMbps = elapsedSec > 0 ? ((e.loaded * 8) / elapsedSec / 1000000).toFixed(2) : "0.00";
+          onProgress(percent, speedMbps);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try { resolve(JSON.parse(xhr.responseText)); } catch (err) { reject(new Error("Invalid JSON")); }
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      };
+      xhr.onerror = () => reject(new Error("Network connection error."));
+      xhr.send(file);
+    });
+  }
+
+  async function runTierTest() {
+    const keyInput = document.getElementById("apiKey").value.trim();
+    const fileInput = document.getElementById("videoFile");
+    const statusDiv = document.getElementById("status");
+    const resultDiv = document.getElementById("result");
+    const modal = document.getElementById("uploadModal");
+    const modalSpeed = document.getElementById("modalSpeed");
+    const modalFill = document.getElementById("modalProgressFill");
+    const modalPercent = document.getElementById("modalPercent");
+    const modalTimer = document.getElementById("modalTimer");
+
+    if (!keyInput) { alert("Please enter your API Key."); return; }
+    if (fileInput.files.length === 0) { alert("Please select a video file."); return; }
+
+    localStorage.setItem("enc_gemini_key_v2", CryptoJS.AES.encrypt(keyInput, PASSPHRASE).toString());
+    const videoFile = fileInput.files[0];
+
+    modal.style.display = "flex";
+    let secondsElapsed = 0;
+    const timerInterval = setInterval(() => {
+      secondsElapsed++;
+      let mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+      let secs = (secondsElapsed % 60).toString().padStart(2, '0');
+      modalTimer.innerText = `${mins}:${secs}`;
+    }, 1000);
+
+    statusDiv.innerText = "⏳ Uploading clip...";
+    resultDiv.style.display = "none";
+
+    try {
+      const uploadUrl = `https://generativelanguage.googleapis.com/upload/v1beta/files?key=${keyInput}`;
+      const uploadData = await uploadFileWithProgress(uploadUrl, videoFile, (percent, speedMbps) => {
+        modalSpeed.innerText = `${speedMbps} mbps`;
+        modalFill.style.width = `${percent}%`;
+        modalPercent.innerText = `${percent}% there`;
+      });
+
+      const fileUri = uploadData?.file?.uri;
+      if (!fileUri) throw new Error("File URI missing.");
+
+      clearInterval(timerInterval);
+      modalSpeed.innerText = "⚡ ANALYZING";
+      statusDiv.innerText = "⏳ Running AI mechanical audit...";
+
+      const generateUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${keyInput}`;
+      const genResponse = await fetch(generateUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: "You are Tonor's Testing AI, a cold, brutally truthful Minecraft PvP mechanical auditor." }] },
+          contents: [{ parts: [{ file_data: { file_uri: fileUri, mime_type: videoFile.type } }, { text: "Analyze this match clip." }] }]
+        })
+      });
+
+      const genData = await genResponse.json();
+      const report = genData?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!report) throw new Error("Empty response from AI.");
+
+      modal.style.display = "none";
+      statusDiv.innerText = "✅ Evaluation Complete.";
+      resultDiv.innerText = report;
+      resultDiv.style.display = "block";
+
+    } catch (err) {
+      clearInterval(timerInterval);
+      modal.style.display = "none";
+      statusDiv.innerText = "❌ Analysis Failed.";
+      alert(err.message);
+    }
+  }
+</script>
+
+</body>
+</html>
